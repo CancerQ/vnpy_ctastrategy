@@ -138,7 +138,11 @@ class BacktestingEngine:
         self.exchange = Exchange(exchange_str)
 
         self.capital = capital
-        self.end = end
+
+        if not end:
+            end = datetime.now()
+        self.end = end.replace(hour=23, minute=59, second=59)
+
         self.mode = mode
         self.risk_free = risk_free
         self.annual_days = annual_days
@@ -245,8 +249,7 @@ class BacktestingEngine:
         self.output("开始计算逐日盯市盈亏")
 
         if not self.trades:
-            self.output("成交记录为空，无法计算")
-            return
+            self.output("回测成交记录为空")
 
         # Add trade data into daily reuslt.
         for trade in self.trades.values():
@@ -783,9 +786,6 @@ class BacktestingEngine:
             init_end
         )
 
-        for bar in bars:
-            callback(bar)
-
         return bars
 
     def load_tick(self, vt_symbol: str, days: int, callback: Callable) -> List[TickData]:
@@ -803,9 +803,6 @@ class BacktestingEngine:
             init_start,
             init_end
         )
-
-        for tick in ticks:
-            callback(tick)
 
         return ticks
 
@@ -1134,7 +1131,7 @@ def evaluate(
     statistics: dict = engine.calculate_statistics(output=False)
 
     target_value: float = statistics[target_name]
-    return (str(setting), target_value, statistics)
+    return (setting, target_value, statistics)
 
 
 def wrap_evaluate(engine: BacktestingEngine, target_name: str) -> callable:
