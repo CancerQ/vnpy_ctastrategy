@@ -11,6 +11,8 @@ from vnpy_ctastrategy import (
 
 
 class DoubleMaStrategy(CtaTemplate):
+    """"""
+
     author = "用Python的交易员"
 
     fast_window = 10
@@ -64,6 +66,7 @@ class DoubleMaStrategy(CtaTemplate):
         """
         Callback of new bar data update.
         """
+        self.cancel_all()
 
         am = self.am
         am.update_bar(bar)
